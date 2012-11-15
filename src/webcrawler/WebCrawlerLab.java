@@ -27,7 +27,7 @@ public class WebCrawlerLab extends Crawler
             params.changeObeyRobotExclusion(true);
             params.changeUserAgent("MyCrawler Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.8.1.4) WebSPHINX 0.5 contact me_at_mycompany_dot_com");
             setDownloadParameters(params);
-            setDomain(Crawler.SUBTREE);
+            setDomain(Crawler.SERVER);
             setLinkType(Crawler.HYPERLINKS);
             setMaxDepth(maxDepth);
             setRoot(new Link(new URL(url)));
