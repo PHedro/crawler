@@ -1,6 +1,7 @@
 import gmail.GmailLab;
 import rss.RSSLab;
 import twitter.TweetLab;
+import webcrawler.WebCrawlerLab;
 
 /**
  * Created with IntelliJ IDEA.
@@ -24,9 +25,12 @@ public class Main
 
         instance.searchAndSave(query);
 
+        WebCrawlerLab wclab = new WebCrawlerLab("http://www.deviantart.com",5,"/traditional/");
+        wclab.run();
+
 
         GmailLab lab = new GmailLab();
-        lab.connect("pedrohenriquereis@id.uff.br", "fredmarykika");
+        lab.connect("", "senha");
         lab.getMessagesFromFolderAndSave("Inbox");
     }
 }
