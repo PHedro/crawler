@@ -1,7 +1,9 @@
 package twitter;
 
-import twitter4j.Twitter;
-import twitter4j.TwitterFactory;
+import twitter4j.*;
+
+import java.sql.PreparedStatement;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -13,15 +15,77 @@ import twitter4j.TwitterFactory;
 
 public class TweetLab
 {
-    private static twitter4j.Twitter twitterInstance = new TwitterFactory().getInstance();
+    private twitter4j.Twitter twitterInstance = new TwitterFactory().getInstance();
 
-    public static Twitter getTwitterInstance()
+
+    public Twitter getTwitterInstance()
     {
         return twitterInstance;
     }
 
-    public static void search(String query)
+    public void searchAndSave(String query)
     {
+        if (query != null && !query.isEmpty())
+        {
+            Twitter instance = getTwitterInstance();
+            Query toSearch = new Query(query);
+            try
+            {
+                QueryResult found = instance.search(toSearch);
+                List<Status> tweets = found.getTweets();
+                saveTweets(tweets);
 
+            }
+            catch (TwitterException e)
+            {
+                e.printStackTrace();
+                System.out.println("Falha na busca: " + e.getMessage());
+                System.exit(-1);
+            }
+        }
+    }
+
+    private boolean saveTweet(Status tweet)
+    {
+        if (tweet != null )
+        {
+            long tweetID = tweet.getId();
+            String id = String.valueOf(tweetID);
+            String title = "";
+            String content = tweet.getText();
+            User user = tweet.getUser();
+            String author = user.getName();
+            String date = tweet.getCreatedAt().toString();
+            String link = mountTweetURL(user, id);
+            String source = "TWITTER";
+
+            System.out.println(id + title + content + author + date + link + source);
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    private String mountTweetURL(User user, String tweetId)
+    {
+        return user.getURL() + "/status/" + tweetId;
+    }
+
+    private void saveTweets(List<Status> tweets)
+    {
+        int fails = 0;
+        int sucess = 0;
+
+        for (Status tweet : tweets)
+        {
+            if (saveTweet(tweet))
+                sucess += 1;
+            else
+                fails += 1;
+        }
+
+        System.out.println( sucess + "Tweets salvos e " + fails + " Tweets falharam." );
     }
 }
