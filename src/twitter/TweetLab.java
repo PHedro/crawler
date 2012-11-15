@@ -88,27 +88,20 @@ public class TweetLab
         {
             long tweetID = tweet.getId();
             String userName = tweet.getToUser();
-            if (userName != null)
-            {
-                String id = String.valueOf(tweetID);
-                String title = "";
-                String author = tweet.getFromUserName();
-                String content = tweet.getText();
-                String date = tweet.getCreatedAt().toString();
-                String link = mountTweetURL(userName, id);
-                String source = "TWITTER";
 
-                System.out.println(id + title + content + author + date + link + source);
-                DBInsertableObject obj = tweetToDBInsertableObject(tweet);
-                obj.saveInDatabase(this.connection);
+            String id = String.valueOf(tweetID);
+            String title = "";
+            String author = tweet.getFromUserName();
+            String content = tweet.getText();
+            String date = tweet.getCreatedAt().toString();
+            String link = mountTweetURL(userName, id);
+            String source = "TWITTER";
 
-                return true;
-            }
-            else
-            {
-                System.out.println("O tweet " + tweetID + " não possui autor válido.");
-                return false;
-            }
+            System.out.println(source + id + title + content + author + date + link );
+//            DBInsertableObject obj = tweetToDBInsertableObject(tweet);
+//            obj.saveInDatabase(this.connection);
+
+            return true;
 
         }
         else
@@ -143,14 +136,5 @@ public class TweetLab
         {
             System.out.println( "não foram passados tweets" );
         }
-    }
-
-    public static void main(String[] args)
-    {
-        TweetLab instance = new TweetLab("localhost", "crawler", "root", "");
-
-        String query = "PHedro";
-
-        instance.searchAndSave(query);
     }
 }

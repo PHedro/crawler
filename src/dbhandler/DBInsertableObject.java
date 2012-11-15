@@ -52,14 +52,14 @@ public class DBInsertableObject
         {
             if (table != null && !table.isEmpty())
             {
-                initialQuery.replace("$tab", table);
+                initialQuery = initialQuery.replace("$tab", table);
 
                 Map<String, String> temp = generateColumnsAndValuesSequence();
                 columnsNames = temp.get("cols");
                 val = temp.get("values");
 
-                initialQuery.replace("$col", columnsNames).replace("'","");
-                initialQuery.replace("$val", val).replace("'","");
+                initialQuery = initialQuery.replace("$col", columnsNames).replace("'","");
+                initialQuery = initialQuery.replace("$val", val).replace("'","");
                 statement = connection.prepareStatement(initialQuery);
             }
         }

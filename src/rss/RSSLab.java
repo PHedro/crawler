@@ -131,7 +131,7 @@ public class RSSLab
             Source src = new Source(content);
             String parsedContent =src.getTextExtractor().setIncludeAttributes(false).toString();
 
-            System.out.println(title + parsedContent + author + data + link + source);
+            System.out.println(source + title + parsedContent + author + data + link);
         }
 
         return result;
@@ -148,11 +148,5 @@ public class RSSLab
         {
             e.printStackTrace();
         }
-    }
-
-    public static void main(String[] args) throws Exception {
-        RSSLab lab = new RSSLab();
-        lab.getEntriesFromUrlAndSave("http://feeds.reuters.com/news/artsculture");
-        lab.close();
     }
 }

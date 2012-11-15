@@ -151,7 +151,7 @@ public class GmailLab
                 String link = "";
                 String source = "MAILGOOGLE";
 
-                System.out.println(author + title + content + data + link + source);
+                System.out.println(source + author + title + content + data + link);
                 return true;
             } catch (MessagingException e) {
                 System.out.println("Erro ao buscar dados da mensagem");
@@ -159,11 +159,5 @@ public class GmailLab
             }
         }
         return false;
-    }
-
-    public static void main(String args[]) {
-        GmailLab lab = new GmailLab();
-        lab.connect("user", "pass");
-        lab.getMessagesFromFolderAndSave("Inbox");
     }
 }
