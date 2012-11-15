@@ -17,14 +17,25 @@ public class TweetLab
 {
     private twitter4j.Twitter twitterInstance = new TwitterFactory().getInstance();
 
+    public static TweetLab getLabInstance()
+    {
+        return new TweetLab();
+    }
 
-    public Twitter getTwitterInstance()
+    private Twitter getTwitterInstance()
     {
         return twitterInstance;
     }
 
     public void searchAndSave(String query)
     {
+        saveTweets(search(query));
+    }
+
+    public List<Status> search(String query)
+    {
+        List<Status> result = null;
+
         if (query != null && !query.isEmpty())
         {
             Twitter instance = getTwitterInstance();
@@ -32,8 +43,7 @@ public class TweetLab
             try
             {
                 QueryResult found = instance.search(toSearch);
-                List<Status> tweets = found.getTweets();
-                saveTweets(tweets);
+                result = found.getTweets();
 
             }
             catch (TwitterException e)
@@ -43,9 +53,10 @@ public class TweetLab
                 System.exit(-1);
             }
         }
+        return result;
     }
 
-    private boolean saveTweet(Status tweet)
+    public boolean saveTweet(Status tweet)
     {
         if (tweet != null )
         {
@@ -73,19 +84,26 @@ public class TweetLab
         return user.getURL() + "/status/" + tweetId;
     }
 
-    private void saveTweets(List<Status> tweets)
+    public void saveTweets(List<Status> tweets)
     {
-        int fails = 0;
-        int sucess = 0;
-
-        for (Status tweet : tweets)
+        if (tweets != null || tweets.size() <= 0)
         {
-            if (saveTweet(tweet))
-                sucess += 1;
-            else
-                fails += 1;
-        }
+            int fails = 0;
+            int sucess = 0;
 
-        System.out.println( sucess + "Tweets salvos e " + fails + " Tweets falharam." );
+            for (Status tweet : tweets)
+            {
+                if (saveTweet(tweet))
+                    sucess += 1;
+                else
+                    fails += 1;
+            }
+
+            System.out.println( sucess + "Tweets salvos e " + fails + " Tweets falharam." );
+        }
+        else
+        {
+            System.out.println( "não foram passados tweets" );
+        }
     }
 }
