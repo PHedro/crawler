@@ -1,6 +1,8 @@
 package dbhandler;
 
 import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 
 /**
  * Created with IntelliJ IDEA.
@@ -14,19 +16,25 @@ public class DBHandler
     private Connection getConnection(String url, String dbName, String user, String password)
     {
         Connection con = null;
-        String URL ="jdbc:mysql://"+url+"/"+dbName;
+        String dburl ="jdbc:mysql://"+url+"/"+dbName;
         String DRIVER ="com.mysql.jdbc.Driver";
-        String USUARIO =user;
-        String SENHA =password;
 
         try
         {
             Class.forName(DRIVER);
+            con = DriverManager.getConnection(dburl, user, password);
         }
         catch (ClassNotFoundException e)
         {
+            System.out.println("These aren't the droids you're looking for.");
             e.printStackTrace();
         }
+        catch (SQLException e)
+        {
+            System.out.println("Houston we have a problem...");
+            e.printStackTrace();
+        }
+
         return con;
     }
 }
