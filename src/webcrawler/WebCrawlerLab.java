@@ -1,5 +1,6 @@
 package webcrawler;
 
+import net.htmlparser.jericho.Source;
 import websphinx.Crawler;
 import websphinx.DownloadParameters;
 import websphinx.Link;
@@ -27,10 +28,10 @@ public class WebCrawlerLab extends Crawler
             params.changeObeyRobotExclusion(true);
             params.changeUserAgent("MyCrawler Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.8.1.4) WebSPHINX 0.5 contact me_at_mycompany_dot_com");
             setDownloadParameters(params);
-            setDomain(Crawler.SERVER);
-            setLinkType(Crawler.HYPERLINKS);
             setMaxDepth(maxDepth);
             setRoot(new Link(new URL(url)));
+            setDomain(Crawler.SERVER);
+            setLinkType(Crawler.ALL_LINKS);
             this.pattern = pattern;
         } catch (MalformedURLException e) {
             e.printStackTrace();
@@ -40,13 +41,6 @@ public class WebCrawlerLab extends Crawler
     @Override
     public void visit(Page page) {
         whileInPage(page);
-        try
-        {
-            Thread.sleep(500L);
-        }
-        catch (InterruptedException e) {
-            e.printStackTrace();
-        }
     }
 
     @Override
@@ -57,6 +51,13 @@ public class WebCrawlerLab extends Crawler
 
     protected void whileInPage(Page page) {
         URL url = page.getURL();
+
+        Source src = new Source(page.getContent());
+        String parsedContent =src.getTextExtractor().setIncludeAttributes(false).toString();
+
+        System.out.println("WEBCRAWLER");
         System.out.println(url.toString());
+        System.out.println(parsedContent);
+
     }
 }

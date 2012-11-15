@@ -25,7 +25,7 @@ public class Main
 
         instance.searchAndSave(query);
 
-        WebCrawlerLab wclab = new WebCrawlerLab("http://www.deviantart.com",5,"/traditional/");
+        WebCrawlerLab wclab = new WebCrawlerLab("http://railscasts.com",2,"episodes");
         wclab.run();
 
 
