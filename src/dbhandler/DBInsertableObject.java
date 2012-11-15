@@ -21,6 +21,11 @@ public class DBInsertableObject
         this.values.put("table", table);
     }
 
+    public void setValue(String key, Object value)
+    {
+        this.values.put(key, value);
+    }
+
     public boolean saveInDatabase(Connection connection)
     {
         PreparedStatement statement = getInsertStatement(connection);
@@ -39,7 +44,7 @@ public class DBInsertableObject
 
         String table = this.values.get("table").toString();
 
-        String initialQuery = "INSERT INTO ? ( ? ) VALUES ( ? )";
+        String initialQuery = "INSERT INTO $tab ( $col ) VALUES ( $val )";
         String columnsNames = "";
         String val = "";
 
@@ -47,15 +52,15 @@ public class DBInsertableObject
         {
             if (table != null && !table.isEmpty())
             {
-                statement = connection.prepareStatement(initialQuery);
-                statement.setString(1, table);
+                initialQuery.replace("$tab", table);
 
                 Map<String, String> temp = generateColumnsAndValuesSequence();
                 columnsNames = temp.get("cols");
                 val = temp.get("values");
 
-                statement.setString(2, columnsNames);
-                statement.setString(3, val);
+                initialQuery.replace("$col", columnsNames).replace("'","");
+                initialQuery.replace("$val", val).replace("'","");
+                statement = connection.prepareStatement(initialQuery);
             }
         }
         catch (SQLException e)
@@ -73,26 +78,19 @@ public class DBInsertableObject
         List<String> val = new ArrayList<String>();
         Set<String> keys = this.values.keySet();
 
-        columns = keys.toString().replace("table, ", "");
+        columns = keys.toString().replace("table, ", "").replace("[", "").replace("]", "");
         result.put("cols", columns);
 
-        int index = 0;
-        int alreadyTable = 0;
         for(String key : keys)
         {
             if(!key.equalsIgnoreCase("table"))
             {
                 Object value = this.values.get(key);
 
-                val.set(index+alreadyTable, value.toString());
+                val.add(value.toString());
             }
-            else
-            {
-                alreadyTable = -1;
-            }
-            index++;
         }
-        result.put("values", val.toString());
+        result.put("values", val.toString().replace("[", "").replace("]", ""));
 
         return result;
     }

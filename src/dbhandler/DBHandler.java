@@ -13,7 +13,7 @@ import java.sql.SQLException;
  */
 public class DBHandler
 {
-    private Connection getConnection(String url, String dbName, String user, String password)
+    public Connection getConnection(String url, String dbName, String user, String password)
     {
         Connection con = null;
         String dburl ="jdbc:mysql://"+url+"/"+dbName;

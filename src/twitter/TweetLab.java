@@ -1,7 +1,10 @@
 package twitter;
 
+import java.sql.Connection;
 import java.util.List;
 
+import dbhandler.DBHandler;
+import dbhandler.DBInsertableObject;
 import twitter4j.*;
 
 /**
@@ -14,11 +17,18 @@ import twitter4j.*;
 
 public class TweetLab
 {
+    private static final String TABLE = "document";
     private Twitter twitterInstance = new TwitterFactory().getInstance();
 
-    public static TweetLab getLabInstance()
+    private static DBHandler handler = new DBHandler();
+    private Connection connection = null;
+
+    public TweetLab(String url, String dbname, String user, String password)
     {
-        return new TweetLab();
+        if(connection == null)
+        {
+            connection = handler.getConnection(url, dbname, user, password);
+        }
     }
 
     private Twitter getTwitterInstance()
@@ -54,6 +64,24 @@ public class TweetLab
         return result;
     }
 
+    private DBInsertableObject tweetToDBInsertableObject(Tweet tweet)
+    {
+        long tweetID = tweet.getId();
+        String userName = tweet.getToUser();
+        DBInsertableObject obj = new DBInsertableObject(TABLE);
+
+        String id = String.valueOf(tweetID);
+        obj.setValue("id", id);
+        obj.setValue("title", "");
+        obj.setValue("author", tweet.getFromUserName());
+        obj.setValue("content", tweet.getText());
+        obj.setValue("date", tweet.getCreatedAt());
+        obj.setValue("link", mountTweetURL(tweet.getToUser(), id));
+        obj.setValue("source", "TWITTER");
+
+        return  obj;
+    }
+
     public boolean saveTweet(Tweet tweet)
     {
         if (tweet != null )
@@ -67,10 +95,13 @@ public class TweetLab
                 String author = tweet.getFromUserName();
                 String content = tweet.getText();
                 String date = tweet.getCreatedAt().toString();
-                String link = mountTweetURL(tweet.getToUser(), id);
+                String link = mountTweetURL(userName, id);
                 String source = "TWITTER";
 
                 System.out.println(id + title + content + author + date + link + source);
+                DBInsertableObject obj = tweetToDBInsertableObject(tweet);
+                obj.saveInDatabase(this.connection);
+
                 return true;
             }
             else
@@ -116,7 +147,7 @@ public class TweetLab
 
     public static void main(String[] args)
     {
-        TweetLab instance = TweetLab.getLabInstance();
+        TweetLab instance = new TweetLab("localhost", "crawler", "root", "");
 
         String query = "PHedro";
 
