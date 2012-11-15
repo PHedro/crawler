@@ -30,7 +30,7 @@ public class Main
 
 
         GmailLab lab = new GmailLab();
-        lab.connect("", "senha");
+        lab.connect("user", "senha");
         lab.getMessagesFromFolderAndSave("Inbox");
     }
 }
