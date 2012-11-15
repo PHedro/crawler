@@ -1,9 +1,8 @@
 package twitter;
 
-import twitter4j.*;
-
-import java.sql.PreparedStatement;
 import java.util.List;
+
+import twitter4j.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -15,7 +14,7 @@ import java.util.List;
 
 public class TweetLab
 {
-    private twitter4j.Twitter twitterInstance = new TwitterFactory().getInstance();
+    private Twitter twitterInstance = new TwitterFactory().getInstance();
 
     public static TweetLab getLabInstance()
     {
@@ -32,9 +31,9 @@ public class TweetLab
         saveTweets(search(query));
     }
 
-    public List<Status> search(String query)
+    public List<Tweet> search(String query)
     {
-        List<Status> result = null;
+        List<Tweet> result = null;
 
         if (query != null && !query.isEmpty())
         {
@@ -44,7 +43,6 @@ public class TweetLab
             {
                 QueryResult found = instance.search(toSearch);
                 result = found.getTweets();
-
             }
             catch (TwitterException e)
             {
@@ -56,22 +54,31 @@ public class TweetLab
         return result;
     }
 
-    public boolean saveTweet(Status tweet)
+    public boolean saveTweet(Tweet tweet)
     {
         if (tweet != null )
         {
             long tweetID = tweet.getId();
-            String id = String.valueOf(tweetID);
-            String title = "";
-            String content = tweet.getText();
-            User user = tweet.getUser();
-            String author = user.getName();
-            String date = tweet.getCreatedAt().toString();
-            String link = mountTweetURL(user, id);
-            String source = "TWITTER";
+            String userName = tweet.getToUser();
+            if (userName != null)
+            {
+                String id = String.valueOf(tweetID);
+                String title = "";
+                String author = tweet.getFromUserName();
+                String content = tweet.getText();
+                String date = tweet.getCreatedAt().toString();
+                String link = mountTweetURL(tweet.getToUser(), id);
+                String source = "TWITTER";
 
-            System.out.println(id + title + content + author + date + link + source);
-            return true;
+                System.out.println(id + title + content + author + date + link + source);
+                return true;
+            }
+            else
+            {
+                System.out.println("O tweet " + tweetID + " não possui autor válido.");
+                return false;
+            }
+
         }
         else
         {
@@ -79,19 +86,19 @@ public class TweetLab
         }
     }
 
-    private String mountTweetURL(User user, String tweetId)
+    private String mountTweetURL(String userName, String tweetId)
     {
-        return user.getURL() + "/status/" + tweetId;
+        return "https://twitter.com/"+ userName + "/status/" + tweetId;
     }
 
-    public void saveTweets(List<Status> tweets)
+    public void saveTweets(List<Tweet> tweets)
     {
         if (tweets != null || tweets.size() <= 0)
         {
             int fails = 0;
             int sucess = 0;
 
-            for (Status tweet : tweets)
+            for (Tweet tweet : tweets)
             {
                 if (saveTweet(tweet))
                     sucess += 1;
@@ -105,5 +112,14 @@ public class TweetLab
         {
             System.out.println( "não foram passados tweets" );
         }
+    }
+
+    public static void main(String[] args)
+    {
+        TweetLab instance = TweetLab.getLabInstance();
+
+        String query = "PHedro";
+
+        instance.searchAndSave(query);
     }
 }
